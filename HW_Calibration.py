@@ -36,10 +36,15 @@ def Calibrate():
                              "start, length, volatility")
     data_swaptn = [CalibrationData(swptn_df.Start[i], swptn_df.Length[i], swptn_df.Quote[i]) for i in swptn_df.index]
 
-    #Call calibration algorith
-    result = [calibrate_hw1f(data_swaptn, swptn_type, ycrv_base)]
+    #Call calibration algorithm
+    alpha, sigma, report = calibrate_hw1f(data_swaptn, swptn_type, ycrv_base)
+    param_calibrated = [alpha,sigma]
 
-    print(result)
+    #Print results to Excel
+    sht.range('result_hw1f').value= param_calibrated
+    sht.range('result_error').options(index=False,header = False).value=report
 
-    #Print to Excel
-    sht.range('result_hw1f').value= result
+if __name__ == '__main__':
+    # Expects the Excel file next to this source file, adjust accordingly.
+    xw.Book('HW_Calibration_Black.xlsm').set_mock_caller()
+    Calibrate()

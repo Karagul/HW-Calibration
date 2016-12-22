@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from pandas import DataFrame
 from collections import namedtuple
 import math
+import pandas as pd
 
 # global data
 # Here enter the Yield Curve reference Data
@@ -111,4 +112,24 @@ def calibrate_hw1f(swaption_quotes, swaption_type, termstructure):
 
     a, sigma = model.params()
 
-    return a, sigma
+    report_results = calibration_report(swaptions, swaption_quotes)
+
+    return a, sigma, report_results
+
+def calibration_report(swaptions, data):
+    #cum_err = 0.0
+    table_report = pd.DataFrame(columns=('Model Price', 'Market Price','Implied Vol', 
+                                         'Market Vol', 'Relative Error'))
+    for i, s in enumerate(swaptions):
+        model_price = s.modelValue()
+        market_vol = data[i].volatility
+        market_price = s.blackPrice(market_vol)
+        rel_error = model_price/market_price - 1.0
+        implied_vol = s.impliedVolatility(model_price,
+                                          1e-5, 50, 0.0, 1.50)
+        rel_error2 = implied_vol/market_vol-1.0
+        #cum_err += rel_error2*rel_error2
+        
+        table_report.loc[i] = [model_price, market_price, implied_vol, market_vol, rel_error]
+
+    return table_report
