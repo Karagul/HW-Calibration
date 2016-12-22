@@ -98,7 +98,7 @@ def create_swaption_helpers(data, quote_type, index, term_structure, engine):
 
 def calibrate_hw1f(swaption_quotes, swaption_type, termstructure):
 
-    # calibrate procdure
+    # calibrate procedure
     ycrv = YieldTermStructureHandle(termstructure)
     index = Euribor1Y(ycrv)
     model = HullWhite(ycrv)
